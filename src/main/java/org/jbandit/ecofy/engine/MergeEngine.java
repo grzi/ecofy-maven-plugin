@@ -5,6 +5,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jbandit.ecofy.model.MergeSettings;
+import org.jbandit.ecofy.utils.EcofyUtils;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -25,6 +26,9 @@ public class MergeEngine {
         if(settings.getFolder() != null && !StringUtils.isEmpty(settings.getFolder())){
             File folder = new File(settings.getFolder());
             mergeFolder(settings, targetFile, new File[]{folder});
+        }else if(settings.getFiles() != null && settings.getFiles().length >0){
+            File[] toMergeFiles = EcofyUtils.toFiles(settings.getFiles());
+            mergeFiles(settings,targetFile,toMergeFiles);
         }
     }
 
@@ -87,6 +91,4 @@ public class MergeEngine {
         }
         return eligibleFiles;
     }
-
-
 }

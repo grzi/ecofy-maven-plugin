@@ -89,8 +89,9 @@ public class MergeEngineTest {
         assertEquals(length,baseFile.length());
     }
 
+
     @Test
-    public void merge_folder_with_destFile_test() throws IOException {
+    public void merge_folder_with_destFile_existance_test() throws IOException {
         MergeSettings settings = new MergeSettings();
         settings.setDeleteFileAfterMerge(false);
         settings.setBrowseSubFolder(false);
@@ -101,8 +102,55 @@ public class MergeEngineTest {
         engine.merge(settings);
 
         File toTest = new File(copyTargetPath + "/folderA.css");
+
         assertEquals(true,toTest.exists());
+    }
+
+    @Test
+    public void merge_folder_with_destFile_length_test() throws IOException {
+        MergeSettings settings = new MergeSettings();
+        settings.setDeleteFileAfterMerge(false);
+        settings.setBrowseSubFolder(false);
+        settings.setExtensions(new String[]{"css"});
+        settings.setTargetFile(copyTargetPath + "/folderA.css");
+        settings.setFolder(copyTargetPath + "/folderA");
+
+        engine.merge(settings);
+
+        File toTest = new File(copyTargetPath + "/folderA.css");
+
         assertEquals(new File(copyTargetPath + "/folderA/fileB.css").length(),toTest.length());
     }
 
+    @Test
+    public void merge_files_with_destFile_existence_test() throws IOException {
+        MergeSettings settings = new MergeSettings();
+        settings.setDeleteFileAfterMerge(false);
+        settings.setBrowseSubFolder(false);
+        settings.setExtensions(new String[]{"css"});
+        settings.setTargetFile(copyTargetPath + "/merged.css");
+        settings.setFiles(new String[]{copyTargetPath + "/fileA.css",copyTargetPath + "/folderA/fileB.css"});
+
+        engine.merge(settings);
+        File toTest = new File(copyTargetPath + "/merged.css");
+        assertEquals(true,toTest.exists());
+    }
+
+    @Test
+    public void merge_files_with_destFile_length_test() throws IOException {
+        MergeSettings settings = new MergeSettings();
+        settings.setDeleteFileAfterMerge(false);
+        settings.setBrowseSubFolder(false);
+        settings.setExtensions(new String[]{"css"});
+        settings.setTargetFile(copyTargetPath + "/merged.css");
+        settings.setFiles(new String[]{copyTargetPath + "/fileA.css",copyTargetPath + "/folderA/fileB.css"});
+
+        engine.merge(settings);
+        File toTest = new File(copyTargetPath + "/merged.css");
+
+        long length =
+                new File(copyTargetPath + "/fileA.css").length()
+                        + new File(copyTargetPath + "/folderA/fileB.css").length();
+        assertEquals(length,toTest.length());
+    }
 }
