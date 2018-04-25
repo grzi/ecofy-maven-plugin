@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EcofyUtils {
+
+    private EcofyUtils(){ }
+
     public static File[] toFiles(String[] fileNames){
         List<File> files = new ArrayList<>();
         if(fileNames==null || fileNames.length==0){

@@ -16,4 +16,9 @@ public class EcofyUtilsTest {
         File[] files = EcofyUtils.toFiles(fileNames);
         assertEquals(2, files.length);
     }
+    @Test
+    public void toFiles_null_test(){
+        File[] files = EcofyUtils.toFiles(null);
+        assertEquals(0,files.length);
+    }
 }
