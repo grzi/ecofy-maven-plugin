@@ -4,8 +4,10 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.jbandit.ecofy.exception.EcofyException;
 import org.jbandit.ecofy.model.MergeSettings;
 import org.jbandit.ecofy.utils.EcofyUtils;
+import org.jbandit.ecofy.utils.SettingsUtils;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -19,17 +21,40 @@ public class MergeEngine {
      *
      * @param settings
      */
-    public void merge(MergeSettings settings) throws IOException {
-        File targetFile = new File(settings.getTargetFile());
-        targetFile.createNewFile();
-
-        if(settings.getFolder() != null && !StringUtils.isEmpty(settings.getFolder())){
-            File folder = new File(settings.getFolder());
-            mergeFolder(settings, targetFile, new File[]{folder});
-        }else if(settings.getFiles() != null && settings.getFiles().length >0){
-            File[] toMergeFiles = EcofyUtils.toFiles(settings.getFiles());
-            mergeFiles(settings,targetFile,toMergeFiles);
+    public void merge(MergeSettings settings) throws EcofyException {
+        SettingsUtils.verifyMergeSettings(settings);
+        File targetFile = initTargetFile(settings);
+        if (settings.getFolder() != null && !StringUtils.isEmpty(settings.getFolder())) {
+            File folder = new File(EcofyUtils.toPath(settings.getBaseDir(),settings.getFolder()));
+            try {
+                mergeFolders(settings, targetFile, folder);
+            }catch(IOException e){
+                throw new EcofyException("Error while merging folder");
+            }
+        } else if (settings.getFiles() != null && settings.getFiles().length > 0) {
+            File[] toMergeFiles = EcofyUtils.toFiles(settings, settings.getFiles());
+            try {
+                mergeFiles(settings, targetFile, toMergeFiles);
+            }catch(IOException e){
+                throw new EcofyException("Error while merging files");
+            }
         }
+    }
+
+    private File initTargetFile(MergeSettings settings) throws EcofyException {
+        File targetFile = new File(EcofyUtils.toPath(settings.getBaseDir(),settings.getTargetFile()));
+        if (targetFile.exists()) {
+            throw new EcofyException("Target file " + settings.getTargetFile() + "already exist or can't be created");
+        }
+
+        try {
+            if(!targetFile.createNewFile()){
+                throw new EcofyException("Impossible to create the targetFile");
+            }
+        } catch (IOException e) {
+            throw new EcofyException("Impossible to create the targetFile : " + e.getMessage());
+        }
+        return targetFile;
     }
 
     /**
@@ -58,12 +83,12 @@ public class MergeEngine {
      * @param dest
      * @param folders
      */
-    protected void mergeFolder(MergeSettings settings, File dest, File... folders) throws IOException {
+    protected void mergeFolders(MergeSettings settings, File dest, File... folders) throws IOException {
         if(folders != null && folders.length >0){
             for(File f : folders){
                 if(f.exists() && f.isDirectory()){
-                   List<File> toMergeFiles = mergeFolder(settings,dest,f);
-                   mergeFiles(settings,dest,toMergeFiles.toArray(new File[toMergeFiles.size()]));
+                    List<File> toMergeFiles = mergeFolder(settings,dest,f);
+                    mergeFiles(settings,dest,toMergeFiles.toArray(new File[toMergeFiles.size()]));
                 }
             }
         }

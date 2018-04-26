@@ -1,5 +1,7 @@
 package org.jbandit.ecofy.model;
 
+import org.apache.maven.plugins.annotations.Parameter;
+
 /**
  * This class represents all the common settings between the different
  * mojo.
@@ -9,7 +11,11 @@ package org.jbandit.ecofy.model;
  *
  */
 public abstract class EcofySettings {
+    @Parameter
     private String[] extensions;
+
+    @Parameter(defaultValue = "")
+    private String baseDir;
 
     public String[] getExtensions() {
         return extensions;
@@ -17,5 +23,13 @@ public abstract class EcofySettings {
 
     public void setExtensions(String[] extensions) {
         this.extensions = extensions;
+    }
+
+    public String getBaseDir() {
+        return baseDir;
+    }
+
+    public void setBaseDir(String baseDir) {
+        this.baseDir = baseDir;
     }
 }

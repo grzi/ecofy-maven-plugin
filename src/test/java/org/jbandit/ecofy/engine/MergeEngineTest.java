@@ -1,6 +1,7 @@
 package org.jbandit.ecofy.engine;
 
 import org.apache.commons.io.FileUtils;
+import org.jbandit.ecofy.exception.EcofyException;
 import org.jbandit.ecofy.model.MergeSettings;
 import org.junit.After;
 import org.junit.Before;
@@ -68,7 +69,7 @@ public class MergeEngineTest {
 
         File folderToMerge = new File(copyTargetPath +"/folderA");
         File baseFile = File.createTempFile("tempFile" , ".tmp");
-        engine.mergeFolder(settings, baseFile,folderToMerge);
+        engine.mergeFolders(settings, baseFile,folderToMerge);
 
         assertEquals(new File(copyTargetPath + "/folderA/fileB.css").length(),baseFile.length());
     }
@@ -82,7 +83,7 @@ public class MergeEngineTest {
 
         File folderToMerge = new File(copyTargetPath +"/folderA");
         File baseFile = File.createTempFile("tempFile" , ".tmp");
-        engine.mergeFolder(settings, baseFile,folderToMerge);
+        engine.mergeFolders(settings, baseFile,folderToMerge);
         long length =
                 new File(copyTargetPath + "/folderA/fileB.css").length()
                         + new File(copyTargetPath + "/folderA/folderB/fileC.css").length();
@@ -91,7 +92,7 @@ public class MergeEngineTest {
 
 
     @Test
-    public void merge_folder_with_destFile_existance_test() throws IOException {
+    public void merge_folder_with_destFile_existance_test() throws EcofyException {
         MergeSettings settings = new MergeSettings();
         settings.setDeleteFileAfterMerge(false);
         settings.setBrowseSubFolder(false);
@@ -107,7 +108,7 @@ public class MergeEngineTest {
     }
 
     @Test
-    public void merge_folder_with_destFile_length_test() throws IOException {
+    public void merge_folder_with_destFile_length_test() throws EcofyException {
         MergeSettings settings = new MergeSettings();
         settings.setDeleteFileAfterMerge(false);
         settings.setBrowseSubFolder(false);
@@ -123,7 +124,7 @@ public class MergeEngineTest {
     }
 
     @Test
-    public void merge_files_with_destFile_existence_test() throws IOException {
+    public void merge_files_with_destFile_existence_test() throws EcofyException {
         MergeSettings settings = new MergeSettings();
         settings.setDeleteFileAfterMerge(false);
         settings.setBrowseSubFolder(false);
@@ -137,7 +138,7 @@ public class MergeEngineTest {
     }
 
     @Test
-    public void merge_files_with_destFile_length_test() throws IOException {
+    public void merge_files_with_destFile_length_test() throws EcofyException {
         MergeSettings settings = new MergeSettings();
         settings.setDeleteFileAfterMerge(false);
         settings.setBrowseSubFolder(false);
@@ -153,4 +154,25 @@ public class MergeEngineTest {
                         + new File(copyTargetPath + "/folderA/fileB.css").length();
         assertEquals(length,toTest.length());
     }
+
+    @Test
+    public void merge_files_with_baseDir_test() throws EcofyException {
+        MergeSettings settings = new MergeSettings();
+        settings.setDeleteFileAfterMerge(false);
+        settings.setBrowseSubFolder(false);
+        settings.setExtensions(new String[]{"css"});
+        settings.setBaseDir(copyTargetPath);
+        settings.setTargetFile("/merged.css");
+        settings.setFiles(new String[]{"fileA.css","folderA/fileB.css"});
+
+        engine.merge(settings);
+        File toTest = new File(copyTargetPath + "/merged.css");
+        long length =
+                new File(copyTargetPath + "/fileA.css").length()
+                        + new File(copyTargetPath + "/folderA/fileB.css").length();
+        assertEquals(length,toTest.length());
+    }
+
+
+
 }
