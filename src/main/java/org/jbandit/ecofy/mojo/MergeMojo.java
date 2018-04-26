@@ -9,8 +9,6 @@ import org.jbandit.ecofy.engine.MergeEngine;
 import org.jbandit.ecofy.exception.EcofyException;
 import org.jbandit.ecofy.model.MergeSettings;
 
-import java.io.IOException;
-
 @Mojo(name = "merge")
 public class MergeMojo extends AbstractMojo {
 

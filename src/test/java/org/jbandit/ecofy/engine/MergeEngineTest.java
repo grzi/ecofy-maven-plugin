@@ -2,10 +2,12 @@ package org.jbandit.ecofy.engine;
 
 import org.apache.commons.io.FileUtils;
 import org.jbandit.ecofy.exception.EcofyException;
+import org.jbandit.ecofy.model.EcofySettings;
 import org.jbandit.ecofy.model.MergeSettings;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.io.File;
 import java.io.IOException;
@@ -131,6 +133,7 @@ public class MergeEngineTest {
         settings.setExtensions(new String[]{"css"});
         settings.setTargetFile(copyTargetPath + "/merged.css");
         settings.setFiles(new String[]{copyTargetPath + "/fileA.css",copyTargetPath + "/folderA/fileB.css"});
+        settings.setFolder("");
 
         engine.merge(settings);
         File toTest = new File(copyTargetPath + "/merged.css");
@@ -153,6 +156,19 @@ public class MergeEngineTest {
                 new File(copyTargetPath + "/fileA.css").length()
                         + new File(copyTargetPath + "/folderA/fileB.css").length();
         assertEquals(length,toTest.length());
+    }
+
+    @Test(expected = EcofyException.class)
+    public void merge_files_with_destFile_alreadyExist_test() throws EcofyException {
+        MergeSettings settings = new MergeSettings();
+        settings.setDeleteFileAfterMerge(false);
+        settings.setBrowseSubFolder(false);
+        settings.setExtensions(new String[]{"css"});
+        settings.setTargetFile(copyTargetPath + "/merged.css");
+        settings.setFiles(new String[]{copyTargetPath + "/fileA.css",copyTargetPath + "/folderA/fileB.css"});
+
+        engine.merge(settings);
+        engine.merge(settings);
     }
 
     @Test

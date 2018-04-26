@@ -4,6 +4,8 @@ import org.jbandit.ecofy.exception.EcofyException;
 import org.jbandit.ecofy.model.MergeSettings;
 
 public class SettingsUtils {
+    private SettingsUtils(){}
+
     public static void verifyMergeSettings(MergeSettings mergeSettings) throws EcofyException {
         if(mergeSettings==null){
             throw new EcofyException("Merge settings are null.");

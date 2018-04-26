@@ -22,8 +22,15 @@ public class SettingsUtilsTest {
         SettingsUtils.verifyMergeSettings(settings);
     }
 
+
     @Test(expected = EcofyException.class)
-    public void verifyMergeSettings_missing_targetFile_test() throws EcofyException{
+    public void verifyMergeSettings_null_test() throws EcofyException{
+        SettingsUtils.verifyMergeSettings(null);
+    }
+
+
+    @Test(expected = EcofyException.class)
+    public void verifyMergeSettings_targetFileNull_test() throws EcofyException{
         MergeSettings settings = new MergeSettings();
         settings.setBaseDir("target/");
         settings.setDeleteFileAfterMerge(true);
@@ -31,6 +38,19 @@ public class SettingsUtilsTest {
         settings.setFiles(null);
         settings.setFolder("randomFolder");
         settings.setExtensions(new String[]{"CSS","JS"});
+        SettingsUtils.verifyMergeSettings(settings);
+    }
+
+    @Test(expected = EcofyException.class)
+    public void verifyMergeSettings_targetFileEmpty_test() throws EcofyException{
+        MergeSettings settings = new MergeSettings();
+        settings.setBaseDir("target/");
+        settings.setDeleteFileAfterMerge(true);
+        settings.setBrowseSubFolder(true);
+        settings.setFiles(null);
+        settings.setFolder("randomFolder");
+        settings.setExtensions(new String[]{"CSS","JS"});
+        settings.setTargetFile("");
         SettingsUtils.verifyMergeSettings(settings);
     }
 
@@ -44,4 +64,18 @@ public class SettingsUtilsTest {
         settings.setTargetFile("targetFile");
         SettingsUtils.verifyMergeSettings(settings);
     }
+
+    @Test(expected = EcofyException.class)
+    public void verifyMergeSettings_missing_files_and_folder2_test() throws EcofyException{
+        MergeSettings settings = new MergeSettings();
+        settings.setBaseDir("target/");
+        settings.setDeleteFileAfterMerge(true);
+        settings.setBrowseSubFolder(true);
+        settings.setExtensions(new String[]{"CSS","JS"});
+        settings.setTargetFile("targetFile");
+        settings.setFiles(new String[0]);
+        settings.setFolder("");
+        SettingsUtils.verifyMergeSettings(settings);
+    }
+
 }
